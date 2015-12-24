@@ -5,7 +5,7 @@ python:
 env:
   - FLASK=0.10.1
 install:
-  - pip install -q -r requirements.txt
+#  - pip install -q -r requirements.txt
   - pip install -q -e .
 #script:
 #  - python setup.py test
