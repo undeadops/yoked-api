@@ -7,4 +7,4 @@ env:
   - FLASK=0.10.1
 install: pip install -r requirements/test.txt
 script:
-  - "pep8 --show-source --show-pep8 api/api.py" 
+  - "pep8 --show-source --show-pep8 --max-line-length=85 --benchmark api/*.py" 
