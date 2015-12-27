@@ -29,15 +29,27 @@ def shutdown_session(exception=None):
 # ------------------------------------------------
 # Database Models
 # ------------------------------------------------
-group_linking=db.Table('group_linking',
-                       db.Column('group_id', db.Integer, db.ForeignKey('group.id'), nullable=False),
-                       db.Column('user_id', db.Integer, db.ForeignKey('user.id'), nullable=False),
-                       db.PrimaryKeyConstraint('group_id', 'user_id'))
+group_linking = db.Table('group_linking',
+                         db.Column('group_id',
+                                   db.Integer,
+                                   db.ForeignKey('group.id'),
+                                   nullable=False),
+                         db.Column('user_id',
+                                   db.Integer,
+                                   db.ForeignKey('user.id'),
+                                   nullable=False),
+                         db.PrimaryKeyConstraint('group_id', 'user_id'))
 
-group_instance=db.Table('group_instances',
-                       db.Column('group_id', db.Integer, db.ForeignKey('group.id'), nullable=False),
-                       db.Column('instance_id', db.Integer, db.ForeignKey('instance.id'), nullable=False),
-                       db.PrimaryKeyConstraint('group_id', 'instance_id'))
+group_instance = db.Table('group_instances',
+                          db.Column('group_id',
+                                    db.Integer,
+                                    db.ForeignKey('group.id'),
+                                    nullable=False),
+                          db.Column('instance_id',
+                                    db.Integer,
+                                    db.ForeignKey('instance.id'),
+                                    nullable=False),
+                          db.PrimaryKeyConstraint('group_id', 'instance_id'))
 
 
 class Instance(db.Model):
@@ -51,7 +63,9 @@ class Instance(db.Model):
     date_created = db.Column(db.DateTime(), default=datetime.datetime.now())
     date_last = db.Column(db.DateTime())
     post_data = db.Column(JSONType)
-    member_of = db.relationship('Group', secondary=group_instance, backref='instances')
+    member_of = db.relationship('Group',
+                                secondary=group_instance,
+                                backref='instances')
 
     def __init__(self, name=None):
         self.instance_name = name
@@ -74,7 +88,9 @@ class User(db.Model):
     access_id = db.Column(db.Integer, db.ForeignKey('access.id'))
     access = db.relationship('Access')
     ssh_pub_key = db.Column(db.UnicodeText)
-    member_of = db.relationship('Group', secondary=group_linking, backref='users')
+    member_of = db.relationship('Group',
+                                secondary=group_linking,
+                                backref='users')
 
     def __repr__(self):
         return '<User %r>' % self.name
@@ -103,7 +119,8 @@ class Access(db.Model):
     description = db.Column(db.String(128))
 
     def __repr__(self):
-        return "<Access(name=%s description='%s')>" % (self.name, self.description)
+        return "<Access(name=%s description='%s')>" % (self.name,
+                                                       self.description)
 
 
 class Shell(db.Model):
@@ -183,8 +200,10 @@ def json_group(group):
 # API Endpoints
 # ----------------------------------------------------------------
 
-# TODO: Change up API application to use a blueprint to separate versions (like v1)
-# TODO: Whats the Proper error codes to issue for status', fix error stats and make sure return values are proper
+# TODO: Change up API application to use a blueprint to separate versions
+# (like v1)
+# TODO: Whats the Proper error codes to issue for status', fix error stats
+# and make sure return values are proper
 # TODO: Ensure replies are consistent across function endpoints
 
 @app.route('/v1/status', methods=['POST'])
@@ -207,7 +226,7 @@ def status():
 
     # Check for Pending processes to run in DB/MessageQueue?
     # Return users that should be setup on system.
-    instance = Instance.query.filter_by(instance_name = data['system']['name']).first()
+    instance = Instance.query.filter_by(instance_name=data['system']['name']).first()
 
     if instance.has_groups:
         users = get_members(instance)
@@ -217,7 +236,8 @@ def status():
                'users': users}
     resp = jsonify(message)
     resp.status_code = 201
-    resp.headers['location'] = url_for('get_instances', instance_id=instance.id)
+    resp.headers['location'] = url_for('get_instances',
+                                       instance_id=instance.id)
     return resp
 
 
@@ -227,7 +247,8 @@ def get_instances(instance_id):
         inst = Instance.query.get(instance_id)
         resp = jsonify()
         resp.status.code = 200
-        resp.headers['location'] = url_for('get_instances', instance_id=inst.id)
+        resp.headers['location'] = url_for('get_instances',
+                                           instance_id=inst.id)
         return resp
 
 
@@ -271,7 +292,7 @@ def groups():
 @app.route('/v1/group', methods=['POST'])
 def add_groups():
     if request.method == 'POST':
-        if not request.json or not 'name' in request.json:
+        if not request.json or 'name' not in request.json:
             abort(400)
         g = Group(name=request.json['name'])
         db.session.add(g)
@@ -284,7 +305,8 @@ def add_groups():
             resp.headers['location'] = url_for('get_group', group_id=g.id)
             return resp
         else:
-            resp = jsonify({"status": 501, "message": "There was an error creating the group"})
+            resp = jsonify({"status": 501,
+                            "message": "There was an error creating the group"})
             resp.status_code = 501
             resp.headers['location'] = url_for('groups')
             return resp
