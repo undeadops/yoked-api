@@ -1,0 +1,15 @@
+# Docker-compose for yoked-api
+
+# Need a postgres DB
+db:
+  image: postgres:9.4
+  environment:
+    POSTGRES_PASSWORD: yokedpassword
+    POSTGRES_USER: cowsay
+    POSTGRES_DB: yoked
+  ports:
+    - "5432:5432"
+
+# I want simple for dev, but deployment/production too..
+#nginx:
+#  image: nginx
