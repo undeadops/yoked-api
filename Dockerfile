@@ -19,4 +19,4 @@ WORKDIR /opt/yoked/api
 EXPOSE 5000
 
 # Start gunicorn
-CMD ["/usr/local/bin/dumb-init", "/usr/bin/gunicorn", "-w", "2", "-b", ":3000", "api:app"]
+CMD ["/usr/bin/dumb-init", "/usr/bin/gunicorn", "-w", "2", "-b", ":3000", "api:app"]
