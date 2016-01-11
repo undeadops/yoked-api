@@ -11,9 +11,9 @@ RUN apt-get update && \
 
 
 # Setup flask application
-RUN mkdir -p /opt/yoked/api
-COPY . /opt/yoked/api/
-RUN pip install -r /opt/yoked/api/requirements/common.txt
+RUN mkdir -p /opt/yoked
+COPY . /opt/yoked/
+RUN pip install -r /opt/yoked/requirements/common.txt
 WORKDIR /opt/yoked/api
 
 EXPOSE 5000
